@@ -1,0 +1,15 @@
+FROM ubuntu:14.04
+
+RUN apt-get update && apt-get install -y openssh-server supervisor vim
+RUN mkdir -p /var/run/sshd
+
+RUN ln -s /etc/supervisor/supervisord.conf /etc/supervisord.conf
+RUN sed -ri "s|/var/log/supervisor|/var/log|g" /etc/supervisor/supervisord.conf
+
+COPY supervisord-sshd.conf /opt/supervisor/supervisord-sshd.conf
+COPY supervisord-cron.conf /opt/supervisor/supervisord-cron.conf
+COPY container-start.sh /opt/supervisor/container-start.sh
+
+EXPOSE 22
+VOLUME /var/log
+CMD ["/opt/supervisor/container-start.sh"]

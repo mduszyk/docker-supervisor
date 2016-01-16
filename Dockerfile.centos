@@ -1,0 +1,21 @@
+FROM centos:7
+
+RUN yum install -y openssh-server python-setuptools vim
+RUN mkdir -p /var/run/sshd /etc/supervisor/conf.d
+
+# install supervisor
+RUN easy_install pip
+RUN pip install supervisor
+RUN echo_supervisord_conf > /etc/supervisor/supervisord.conf
+RUN ln -s /etc/supervisor/supervisord.conf /etc/supervisord.conf
+RUN sed -ri "s|/tmp/supervisor.sock|/var/run/supervisor.sock|g" /etc/supervisor/supervisord.conf
+RUN sed -ri "s|/tmp/supervisord.log|/var/log/supervisord.log|g" /etc/supervisor/supervisord.conf
+RUN echo -e "[include]\nfiles = /etc/supervisor/conf.d/*.conf" >> /etc/supervisor/supervisord.conf
+
+COPY supervisord-sshd.conf /opt/supervisor/supervisord-sshd.conf
+COPY supervisord-cron.conf /opt/supervisor/supervisord-cron.conf
+COPY container-start.sh /opt/supervisor/container-start.sh
+
+EXPOSE 22
+VOLUME /var/log
+CMD ["/opt/supervisor/container-start.sh"]
