@@ -20,6 +20,7 @@ if mkdir /opt/supervisor/.initialized; then
     fi
 
     if [ ! -z "$SSHD" ]; then
+        mkdir -p /var/run/sshd
         # SSH login fix. Otherwise user is kicked off after login
         sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
         cp -f /opt/supervisor/supervisord-sshd.conf /etc/supervisor/conf.d/
@@ -31,5 +32,4 @@ if mkdir /opt/supervisor/.initialized; then
     fi
 fi
 
-mkdir -p /var/run/sshd
-exec /usr/bin/supervisord --nodaemon -c /etc/supervisor/supervisord.conf
+exec "$@"

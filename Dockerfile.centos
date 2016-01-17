@@ -14,8 +14,10 @@ RUN echo -e "[include]\nfiles = /etc/supervisor/conf.d/*.conf" >> /etc/superviso
 
 COPY supervisord-sshd.conf /opt/supervisor/supervisord-sshd.conf
 COPY supervisord-cron.conf /opt/supervisor/supervisord-cron.conf
-COPY container-start.sh /opt/supervisor/container-start.sh
+COPY docker-entrypoint.sh /opt/supervisor/entrypoint.sh
 
 EXPOSE 22
 VOLUME /var/log
-CMD ["/opt/supervisor/container-start.sh"]
+
+ENTRYPOINT ["/opt/supervisor/entrypoint.sh"]
+CMD ["/usr/bin/supervisord", "--nodaemon", "-c", "/etc/supervisor/supervisord.conf"]
