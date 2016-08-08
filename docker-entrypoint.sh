@@ -30,6 +30,15 @@ if mkdir /opt/supervisor/.initialized; then
     if [ ! -z "$CRON" ]; then
         cp -f /opt/supervisor/supervisord-cron.conf /etc/supervisor/conf.d/
     fi
+
+    # Preprocessing.
+    if [ ! -z "$BOOT_SCRIPT" ] && [ -f $BOOT_SCRIPT ]; then
+        echo "Executing boot script: $BOOT_SCRIPT"
+        source $BOOT_SCRIPT
+    elif [ -f "/opt/boot.sh" ]; then
+        echo "Executing default boot script at /opt/boot.sh"
+        source /opt/boot.sh
+    fi
 fi
 
 exec "$@"
